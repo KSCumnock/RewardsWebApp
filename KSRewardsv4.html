@@ -579,6 +579,25 @@
                 grid-template-columns: 1fr;
             }
         }
+        .no-results-card {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            grid-column: 1 / -1;
+        }
+        
+        .no-results-icon {
+            font-size: 2rem;
+            color: var(--gray);
+            margin-bottom: 1rem;
+        }
+        
+        .no-results-text {
+            color: var(--gray);
+            font-size: 1.1rem;
+        }
     </style>
 </head>
 <body>
@@ -839,7 +858,14 @@
                     rewardsList.appendChild(rewardCard);
                 });
             } else {
-                rewardsList.innerHTML = '<p style="grid-column:1/-1;text-align:center;">No rewards found.</p>';
+                 rewardsList.innerHTML = `
+                    <div class="no-results-card">
+                        <div class="no-results-icon">
+                            <i class="fas fa-gift"></i>
+                        </div>
+                        <p class="no-results-text">No rewards found</p>
+                    </div>
+                `;
             }
             
             // Display transactions
@@ -868,7 +894,14 @@
                     transactionsList.appendChild(transactionElement);
                 });
             } else {
-                transactionsList.innerHTML = '<div class="transaction-item" style="text-align:center;">No transactions found.</div>';
+                  transactionsList.innerHTML = `
+                    <div class="no-results-card">
+                        <div class="no-results-icon">
+                            <i class="fas fa-receipt"></i>
+                        </div>
+                        <p class="no-results-text">No transactions found</p>
+                    </div>
+                `;
             }
         }
         
