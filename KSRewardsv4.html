@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loyalty Rewards Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --dark: #1b263b;
+            --light: #f8f9fa;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --danger: #f72585;
+            --gray: #adb5bd;
+            --white: #ffffff;
+            --gold: #ffd700;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        h1 {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            color: var(--gray);
+            font-size: 1.1rem;
+        }
+        
+        .card-input-section {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+            text-align: center;
+            animation: fadeIn 0.8s ease-out;
+            transition: all 0.3s ease;
+        }
+        
+        .card-input-section:hover {
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        
+        .input-group {
+            position: relative;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .card-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+            font-size: 1.2rem;
+        }
+        
+        #cardNumber {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            font-size: 1.1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+        }
+        
+        #cardNumber:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+            outline: none;
+        }
+        
+        #cardNumber::placeholder {
+            color: var(--gray);
+            opacity: 0.7;
+        }
+        
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            margin-top: 1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .error {
+            color: var(--danger);
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            min-height: 1.2rem;
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        .dashboard {
+            display: none;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+            animation-delay: 0.3s;
+        }
+        
+        .customer-card {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(67, 97, 238, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .customer-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+        }
+        
+        .customer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .customer-name {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        
+        .customer-id {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .customer-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .detail-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .detail-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 0.5rem;
+        }
+        
+        .detail-value {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .points-value {
+            color: var(--success);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 2rem 0 1rem;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .section-title i {
+            color: var(--primary);
+        }
+        
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .reward-card {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--primary);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .reward-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .reward-card.redeemed {
+            opacity: 0.7;
+            border-left-color: var(--gray);
+        }
+        
+        .reward-card.redeemed::after {
+            content: 'REDEEMED';
+            position: absolute;
+            top: 15px;
+            right: -45px;
+            background: var(--gray);
+            color: white;
+            padding: 0.2rem 2.5rem;
+            font-size: 0.7rem;
+            font-weight: bold;
+            transform: rotate(45deg);
+        }
+        
+        .reward-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+        
+        .reward-description {
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .reward-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .reward-detail {
+            font-size: 0.9rem;
+        }
+        
+        .reward-detail-label {
+            color: var(--gray);
+            margin-bottom: 0.2rem;
+        }
+        
+        .reward-code {
+            background: var(--light);
+            padding: 0.3rem 0.5rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .transaction-list {
+            background: var(--white);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .transaction-item {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            padding: 1rem 1.5rem;
+            align-items: center;
+            border-bottom: 1px solid #f1f3f5;
+            transition: all 0.3s ease;
+        }
+        
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+        
+        .transaction-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .transaction-location {
+            font-weight: 600;
+        }
+        
+        .transaction-date {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .transaction-amount {
+            text-align: right;
+            font-weight: 600;
+        }
+        
+        .transaction-points {
+            text-align: right;
+            color: var(--success);
+            font-weight: 600;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 2rem 0;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(67, 97, 238, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        .available-rewards-section {
+            display: none;
+            margin-top: 3rem;
+            background: var(--white);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            animation: slideInUp 0.8s ease-out;
+        }
+        
+        .available-rewards-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .available-rewards-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .available-rewards-title i {
+            color: var(--primary);
+        }
+        
+        .available-rewards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .available-reward-card {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 1px solid #e9ecef;
+        }
+        
+        .available-reward-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .available-reward-card.unlockable {
+            border-color: var(--success);
+        }
+        
+        .reward-image-placeholder {
+            height: 120px;
+            background: linear-gradient(135deg, #f5f7fa, #e4e8eb);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            color: var(--gray);
+            font-size: 2rem;
+        }
+        
+        .reward-points-cost {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+            font-weight: 600;
+        }
+        
+        .reward-points-cost i {
+            color: var(--gold);
+        }
+        
+        .points-needed {
+            color: var(--danger);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .points-sufficient {
+            color: var(--success);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .reward-additional-info {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--light);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        
+        .progress-container {
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            margin: 0.5rem 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: var(--success);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+        
+        .unlock-btn {
+            width: 100%;
+            padding: 0.7rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+        
+        .unlock-btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInDown {
+            from { 
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideInUp {
+            from { 
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .customer-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .transaction-item {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+            
+            .transaction-amount, .transaction-points {
+                text-align: left;
+            }
+            
+            .available-rewards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-crown"></i>
+            </div>
+            <h1>Loyalty Rewards Dashboard</h1>
+            <p class="subtitle">View your rewards and transaction history</p>
+        </header>
+        
+        <div class="card-input-section">
+            <div class="input-group">
+                <i class="fas fa-credit-card card-icon"></i>
+                <input type="text" id="cardNumber" placeholder="123-456-789" maxlength="11">
+            </div>
+            <button class="btn" onclick="fetchRewards()">
+                <i class="fas fa-search"></i> View Dashboard
+            </button>
+            <div id="error" class="error"></div>
+        </div>
+        
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Loading your rewards...</p>
+        </div>
+        
+        <div id="dashboard" class="dashboard">
+            <div class="customer-card">
+                <div class="customer-header">
+                    <h2 class="customer-name" id="customerName"></h2>
+                    <span class="customer-id" id="customerCardNumber"></span>
+                </div>
+                <div class="customer-details">
+                    <div class="detail-card">
+                        <div class="detail-label">Points Balance</div>
+                        <div class="detail-value points-value" id="pointsBalance"></div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-label">Member Since</div>
+                        <div class="detail-value" id="joinDate"></div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-label">Card Expires</div>
+                        <div class="detail-value" id="expiryDate"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 class="section-title">
+                <i class="fas fa-gift"></i> Your Rewards
+            </h3>
+            <div class="grid-container" id="rewardsList"></div>
+            
+            <h3 class="section-title">
+                <i class="fas fa-receipt"></i> Recent Transactions
+            </h3>
+            <div class="transaction-list" id="transactionsList"></div>
+        </div>
+        
+        <div class="available-rewards-section" id="availableRewardsSection">
+            <div class="available-rewards-header">
+                <h3 class="available-rewards-title">
+                    <i class="fas fa-star"></i> Available Rewards
+                </h3>
+            </div>
+            <div class="available-rewards-grid" id="availableRewardsList"></div>
+        </div>
+    </div>
+
+    <script>
+        // Current customer points balance
+        let currentPoints = 0;
+        
+        // Format card number input with dashes
+        document.getElementById('cardNumber').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            
+            if (value.length > 9) {
+                value = value.substring(0, 9);
+            }
+            
+            if (value.length > 6) {
+                value = value.substring(0, 6) + '-' + value.substring(6);
+            }
+            if (value.length > 3) {
+                value = value.substring(0, 3) + '-' + value.substring(3);
+            }
+            
+            e.target.value = value;
+        });
+        
+        async function fetchAvailableRewards() {
+            try {
+                const response = await fetch('https://raw.githubusercontent.com/KSCumnock/Rewards/main/Main/rewards.json');
+                const data = await response.json();
+                return data.rewards;
+            } catch (error) {
+                console.error('Error fetching available rewards:', error);
+                return [];
+            }
+        }
+        
+        function displayAvailableRewards(rewards, customerPoints = 0) {
+            const availableRewardsList = document.getElementById('availableRewardsList');
+            availableRewardsList.innerHTML = '';
+            
+            if (rewards && rewards.length > 0) {
+                rewards.forEach(reward => {
+                    if (!reward.isAvailable) return;
+                    
+                    const pointsNeeded = Math.max(0, reward.pointsCost - customerPoints);
+                    const canUnlock = customerPoints >= reward.pointsCost;
+                    const progressPercentage = Math.min(100, (customerPoints / reward.pointsCost) * 100);
+                    
+                    const rewardCard = document.createElement('div');
+                    rewardCard.className = `available-reward-card ${canUnlock ? 'unlockable' : ''}`;
+                    
+                    rewardCard.innerHTML = `
+                        <div class="reward-image-placeholder">
+                            <i class="fas fa-${getRewardIcon(reward.imageUrl)}"></i>
+                        </div>
+                        <h3 class="reward-name">${reward.name}</h3>
+                        <p class="reward-description">${reward.description}</p>
+                        
+                        <div class="reward-points-cost">
+                            <i class="fas fa-coins"></i>
+                            <span>${reward.pointsCost.toLocaleString()} Points</span>
+                        </div>
+                        
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: ${progressPercentage}%"></div>
+                        </div>
+                        <div class="${canUnlock ? 'points-sufficient' : 'points-needed'}">
+                            ${canUnlock 
+                                ? `<i class="fas fa-check-circle"></i> You have enough points!` 
+                                : `<i class="fas fa-lock"></i> Need ${pointsNeeded.toLocaleString()} more points`}
+                        </div>
+                        
+                        <button class="unlock-btn" onclick="window.open('https://kerrandsmith.co.uk', '_blank')">
+                            Unlock Reward
+                        </button>
+                        
+                        <div class="reward-additional-info">
+                            <p>${reward.additionalInfo}</p>
+                        </div>
+                    `;
+                    
+                    availableRewardsList.appendChild(rewardCard);
+                });
+            } else {
+                availableRewardsList.innerHTML = '<p style="grid-column:1/-1;text-align:center;">No available rewards found.</p>';
+            }
+        }
+        
+        function getRewardIcon(imageUrl) {
+            const icons = {
+                'voucher_5': 'money-bill-wave',
+                'discount_service': 'percent',
+                'free_product': 'gift',
+                'vip_event': 'crown'
+            };
+            return icons[imageUrl] || 'gift';
+        }
+        
+        async function fetchRewards() {
+            const cardNumber = document.getElementById('cardNumber').value.replace(/\D/g, '');
+            const errorElement = document.getElementById('error');
+            const dashboard = document.getElementById('dashboard');
+            const loading = document.querySelector('.loading');
+            const availableRewardsSection = document.getElementById('availableRewardsSection');
+            
+            // Clear previous results and errors
+            errorElement.textContent = '';
+            dashboard.style.display = 'none';
+            availableRewardsSection.style.display = 'none';
+            
+            if (!cardNumber) {
+                errorElement.textContent = 'Please enter your loyalty card number';
+                return;
+            }
+            
+            if (cardNumber.length !== 9) {
+                errorElement.textContent = 'Card number must be 9 digits';
+                return;
+            }
+            
+            try {
+                loading.style.display = 'block';
+                
+                // Construct the GitHub raw URL
+                const url = `https://raw.githubusercontent.com/KSCumnock/Rewards/main/Main/${cardNumber}.json`;
+                
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error('Card number not found. Please check your number and try again.');
+                }
+                
+                const data = await response.json();
+                currentPoints = data.customer.pointsBalance;
+                
+                // Simulate loading delay for better UX
+                setTimeout(async () => {
+                    loading.style.display = 'none';
+                    displayDashboard(data);
+                    
+                    // Fetch and display available rewards
+                    const rewards = await fetchAvailableRewards();
+                    displayAvailableRewards(rewards, currentPoints);
+                    availableRewardsSection.style.display = 'block';
+                }, 800);
+                
+            } catch (error) {
+                loading.style.display = 'none';
+                errorElement.textContent = error.message;
+                console.error('Error fetching data:', error);
+            }
+        }
+        
+        function displayDashboard(data) {
+            const dashboard = document.getElementById('dashboard');
+            dashboard.style.display = 'block';
+            
+            // Display customer info
+            document.getElementById('customerName').textContent = data.customer.name;
+            document.getElementById('customerCardNumber').textContent = formatCardNumber(data.customer.cardNumber);
+            document.getElementById('pointsBalance').textContent = data.customer.pointsBalance.toLocaleString();
+            document.getElementById('joinDate').textContent = formatDate(data.customer.joinDate);
+            document.getElementById('expiryDate').textContent = formatDate(data.customer.expiryDate);
+            
+            // Display rewards
+            const rewardsList = document.getElementById('rewardsList');
+            rewardsList.innerHTML = '';
+            
+            if (data.redemptions && data.redemptions.length > 0) {
+                data.redemptions.forEach(reward => {
+                    const rewardCard = document.createElement('div');
+                    rewardCard.className = `reward-card ${reward.isRedeemed ? 'redeemed' : ''}`;
+                    
+                    rewardCard.innerHTML = `
+                        <h3 class="reward-name">${reward.rewardName}</h3>
+                        <p>${reward.isRedeemed ? 'Redeemed on ' + formatDate(reward.redemptionDate) : 'Available until ' + formatDate(reward.expiryDate)}</p>
+                        
+                        <div class="reward-details">
+                            <div class="reward-detail">
+                                <div class="reward-detail-label">Code</div>
+                                <div class="reward-code">${reward.redemptionCode}</div>
+                            </div>
+                            <div class="reward-detail">
+                                <div class="reward-detail-label">Points</div>
+                                <div>${reward.pointsSpent.toLocaleString()}</div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    rewardsList.appendChild(rewardCard);
+                });
+            } else {
+                rewardsList.innerHTML = '<p style="grid-column:1/-1;text-align:center;">No rewards found.</p>';
+            }
+            
+            // Display transactions
+            const transactionsList = document.getElementById('transactionsList');
+            transactionsList.innerHTML = '';
+            
+            if (data.transactions && data.transactions.length > 0) {
+                // Sort transactions by date (newest first)
+                const sortedTransactions = [...data.transactions].sort((a, b) => {
+                    return new Date(b.date) - new Date(a.date);
+                });
+                
+                sortedTransactions.forEach(transaction => {
+                    const transactionElement = document.createElement('div');
+                    transactionElement.className = 'transaction-item';
+                    
+                    transactionElement.innerHTML = `
+                        <div>
+                            <div class="transaction-location">${transaction.storeLocation}</div>
+                            <div class="transaction-date">${formatDate(transaction.date)}</div>
+                        </div>
+                        <div class="transaction-amount">£${transaction.amount.toFixed(2)}</div>
+                        <div class="transaction-points">+${transaction.pointsEarned}</div>
+                    `;
+                    
+                    transactionsList.appendChild(transactionElement);
+                });
+            } else {
+                transactionsList.innerHTML = '<div class="transaction-item" style="text-align:center;">No transactions found.</div>';
+            }
+        }
+        
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-GB', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        function formatCardNumber(number) {
+            if (!number) return '';
+            const str = number.toString();
+            return str.substring(0, 3) + '-' + str.substring(3, 6) + '-' + str.substring(6, 9);
+        }
+    </script>
+</body>
+</html>
