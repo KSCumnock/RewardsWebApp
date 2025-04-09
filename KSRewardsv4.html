@@ -693,7 +693,7 @@
         
         async function fetchAvailableRewards() {
             try {
-                const response = await fetch('https://raw.githubusercontent.com/KSCumnock/Rewards/main/Main/rewards.json');
+                const response = await fetch('https://raw.githubusercontent.com/KSCumnock/Rewards/main/Main//Rewards/rewards.json');
                 const data = await response.json();
                 return data.rewards;
             } catch (error) {
@@ -790,7 +790,7 @@
                 loading.style.display = 'block';
                 
                 // Construct the GitHub raw URL
-                const url = `https://raw.githubusercontent.com/KSCumnock/Rewards/main/Main/${cardNumber}.json`;
+                const url = `https://raw.githubusercontent.com/KSCumnock/Rewards/main/Main/Customers/${cardNumber}.json`;
                 
                 const response = await fetch(url);
                 
